@@ -7,7 +7,9 @@ Understanding crime patterns is essential for law enforcement agencies and makin
 ## Dataset
 This dataset contains information about crime incidents in the City of Los Angeles from 2020 to present, with columns such as crime descriptions, victim demographics, location coordinates and time of crime occurrences. The dataset was downloaded as a CSV file from a public repository provided by the City of Los Angeles, ensuring accessibility, accuracy, and reliability.
 This dataset provides a comprehensive insight into crimes, with more than 20 attributes capturing important details. Features such as Victim Age, Descent, Sex is necessary in analyzing demographics, while attributes about Area, Longitude, Latitude, and Time occurs facilitates to explore spatial and temporal trends.
+
  [Data Source](https://data.lacity.org/Public-Safety/Crime-Data-from-2020-to-Present/2nrs-mtv8/about_data)
+ 
   The original dataset has 28 columns and up to 987,000 rows.
   After preprocessing: 24 columns and 9,999 rows with new features
 -	Time.to.reports: to count how many days a crime occurrence took to report
