@@ -27,7 +27,7 @@ crime_data$DATE.OCC <- as.POSIXct(crime_data$DATE.OCC, format = "%m/%d/%Y %I:%M:
 temp_crime_data <- data.frame(lapply(crime_data, as.character), stringsAsFactors = FALSE)
 empty_cells_per_column <- colSums(temp_crime_data == "")
 empty_cells_per_column
-#Take only 10,000 rows
+#Take only 9,999 rows
 crime_desc_counts <- crime_data %>% group_by(Crm.Cd.Desc) %>% summarise(count = n()) %>% arrange(desc(count))
 top_3_crimes_type <- crime_desc_counts %>% top_n(3,count)
 top_3_crimes_type

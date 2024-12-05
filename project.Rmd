@@ -64,7 +64,7 @@ area_name_counts <- final_crime_data %>% group_by(AREA.NAME) %>%
   summarise(count = n()) %>% arrange(desc(count))
 head(area_name_counts)
 ```
- Central are has the highest rate in Crime type in the dataset.
+ Central areas has the highest rate in Crime type in the dataset.
 
 
 
@@ -150,7 +150,7 @@ Average_TimeReport_Areas <- final_crime_data %>%
 head(Average_TimeReport_Areas)
 
 ```
- The ANOVA test result and data of average time of report show the difference between areas in reporting crime occurrences. 77th Street has the highest average reporting time, indicating the challenges in this area might be slower police response or residents taking longer time to report crimes. Central area has the shortest average time in reporting, indicating this area might have better infrastructure to facilitate quickly reports.
+ The ANOVA test result and data of average time of report show the difference between areas in reporting crime occurrences.Devonshire has the highest average reporting time, indicating the challenges in this area might be slower police response or residents taking longer time to report crimes. N Hollywood area has the shorter average time in reporting, indicating this area might have better infrastructure to facilitate quickly reports.
 
 
 
@@ -181,6 +181,7 @@ classifier <- svm(Crm.Cd.Desc ~ Vict.Descent + Vict.Age + Vict.Sex +
                     AREA.NAME  +Time_Slots_Happening + Weekdays_of_DateOcc + Premis.Cd, 
                   data = train, type = "C-classification", kernel = "radial")
 summary(classifier)
+#Create predicted column in the test data
 test$test_pred_svm <- predict(classifier, test)
 #Confusion matrix
 conf_mat(test, truth=Crm.Cd.Desc, estimate = test_pred_svm)
@@ -192,8 +193,8 @@ dt_metrics(test, truth = Crm.Cd.Desc, estimate = test_pred_svm)
  Accuracy of 62% indicates the model predicts correctly the crime types about 62% of the time.
  Sensitivity of 62% indicates the model captures around 62% of the actual crime types across all categories.
  Specificity of 81% indicates the model does a good job in identifying correctly non crime types. It s higher than the sensitivity, showing that the model does better in identifying when there is not a crime happening rather than when it is. 
- f_meas of 58.2% indicates the balance of precision and recall, indicating the model is doing fairly well but still has room for improvement.
- kap of 42.9% means a moderate level of agreement between the actual values and the model prediction
+ f_meas of ~59% indicates the balance of precision and recall, indicating the model is doing fairly well but still has room for improvement.
+ kap of ~44% means a moderate level of agreement between the actual values and the model prediction
  
  
  
@@ -207,6 +208,7 @@ df_recipe <- recipe(Crm.Cd.Desc ~ Vict.Descent + Vict.Age + Vict.Sex +AREA.NAME+
 #create decision tree workflow
 tree_wf <- workflow() %>% add_recipe(df_recipe) %>% add_model(tree) %>% fit(train)
 predResults <- data.frame(predict(tree_wf, test))
+#Create predicted column in the test data
 colnames(predResults) <- c("test_pred_tree")
 test <- cbind(test, predResults)
 conf_mat(test, truth=Crm.Cd.Desc, estimate = test_pred_tree)
@@ -215,11 +217,11 @@ library(yardstick)
 dt_metricsS <- metric_set(accuracy, sens, spec, f_meas, kap)
 dt_metricsS(test, truth = Crm.Cd.Desc, estimate = test_pred_tree)
 ```
-  Accuracy of 67.3% indicates the model predicts correctly the crime types about 67.3% of the time.
- Sensitivity of 67.2% indicates the model captures around 67.2% of the actual crime types across all categories.
- Specificity of 83.6% indicates the model does a good job in identifying correctly non crime types. It s higher than the sensitivity, showing that the model does better in identifying when there is not a crime happening rather than when it is. 
- f_meas of 65% indicates the balance of precision and recall, indicating the model is doing fairly well but still has room for improvement.
- kap of 50.9% means a moderate level of agreement between the actual values and the model prediction
+  Accuracy of 67.7% indicates the model predicts correctly the crime types about 67.7% of the time.
+  Sensitivity of 67.6% indicates the model captures around 67.6% of the actual crime types across all categories.
+  Specificity of 83.8% indicates the model does a good job in identifying correctly non crime types. It s higher than the sensitivity, showing that the model does better in identifying when there is not a crime happening rather than when it is. 
+  f_meas of 65% indicates the balance of precision and recall, indicating the model is doing fairly well but still has room for improvement.
+  kap of 51.5% means a moderate level of agreement between the actual values and the model prediction
 
 **Random Forest and its performance**
 ```{r}
@@ -235,6 +237,7 @@ random_wf_52 <- workflow() %>% add_recipe(df_recipe) %>% add_model(rf) %>% fit(t
 summary(random_wf_52)
 #Creating new column test_pred_rf containing predicted values about Crm.Cd.Desc on test data
 predResults <- data.frame(predict(random_wf_52,test))
+#Create predicted column in the test data
 colnames(predResults) <- c("test_pred_rf")
 test <- cbind(test, predResults)
 #Confusion matrix
@@ -248,7 +251,7 @@ dt_metricsS(test, truth = Crm.Cd.Desc, estimate = test_pred_rf)
  Random Forest Model has the best performance than SVM, Decision tree models in almost key metrics: higher accuracy(nearly 72%), better sensitivity, Superior Specificity, Improved F-measure, and stronger Kappa Score. Especially, the higher in accurancy make Random Forest a stronger option to classify Crime Type based on Victim Demographic and Crime Locations, Time. However, with Random Forest, nearly 28% of predictions predicted incorrectly, so there is still room for improvement to further enhance the performance of this model.
   
   
-# 5.3. Logistic Regression: Classify Time.to.reports as Delayed (>30 days) or Timely (<= 30days)
+# 5.3. Logistic Regression: Classify Time.to.reports as Delayed (>1 day) or Timely (<= 1 day)
 
 ```{r}
 library(caret)
@@ -268,6 +271,6 @@ test$Delayed_Report <- factor(test$Delayed_Report, levels = c(0, 1))
 confusionMatrix(test$Delayed_Report, glm.pred)
 ```
 
- The accuracy of nearly 75.5%, showing this model performs reasonably well in distinguishing whether a crime was reported on time or not. And this model performs better at predicting delayed reports than timely reports, which was shown by the higher PPV than NPV.
+ The accuracy of nearly 76.1%, showing this model performs reasonably well in distinguishing whether a crime was reported on time or not. And this model performs better at predicting delayed reports than timely reports, which was shown by the higher PPV than NPV.
  The p-value (Acc > NIR) is statistically significant, showing that the performance of this model is meaningful.
  
