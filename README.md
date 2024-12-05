@@ -13,7 +13,7 @@ This dataset provides a comprehensive insight into crimes, with more than 20 att
   The original dataset has 28 columns and up to 987,000 rows.
   After preprocessing: 24 columns and 9,999 rows with new features
 -	Time.to.reports: to count how many days a crime occurrence took to report
--	Delayed_Report (1-0): to check whether a crime occurrence was delayed (>30 days) or not in reporting
+-	Delayed_Report (1-0): to check whether a crime occurrence was delayed (> 1 day) or not in reporting
 -	Time_Slots_Happening: to convert Date.Occ to time slots (midnight, morning, afternoon, evening)
 -	Weekdays_of_DateRptd: to transform Date.Occ to weekdays (Monday, Tuesday, etc).
 ## EDA process
@@ -29,7 +29,7 @@ It is crucial to predict crime types based on Victim demographics and crime loca
 -	Investigating effectively: police can investigate quickly patterns and focus on situations which have similar profiles 
 -	Improving resource allocation: law enforcement agencies can allocate resources effectively by understanding insights into crime patterns
 
-###	2. Logistic Regression to Classify Time.to.reports as Delayed (>30 days) or Timely (<= 30days)
+###	2. Logistic Regression to Classify Time.to.reports as Delayed (> 1 day) or Timely (<= 1 day)
 It is necessary to identify whether a crime report is timely or delayed because of various reasons:
 -	Allocating resources: Knowing the time of reports may help stakeholders allocate their resources effectively.
 -	Improving the function of law enforcement agencies: Reports timely allow faster investigation while delayed reports can reduce the probability of solving crimes because of the loss of necessary data. 
