@@ -249,6 +249,41 @@ dt_metricsS(test, truth = Crm.Cd.Desc, estimate = test_pred_rf)
 ```
  Three classification models was used to predict crime types. I created the confusion matrix and evaluation metrics to gain details about how well the model performed.
  Random Forest Model has the best performance than SVM, Decision tree models in almost key metrics: higher accuracy(nearly 72%), better sensitivity, Superior Specificity, Improved F-measure, and stronger Kappa Score. Especially, the higher in accurancy make Random Forest a stronger option to classify Crime Type based on Victim Demographic and Crime Locations, Time. However, with Random Forest, nearly 28% of predictions predicted incorrectly, so there is still room for improvement to further enhance the performance of this model.
+
+**Tunning hyperparameter Search for Random Forest model**
+```{r}
+library(dplyr)
+library(tidymodels)
+train$Vict.Descent <- as.factor(train$Vict.Descent)
+#Define the model with tunable parameters
+new_rf <- rand_forest(
+  trees = tune(),
+  mtry = tune(),
+  min_n = tune()
+) %>% set_engine("ranger", importance = "impurity") %>%
+set_mode("classification")
+new_random_wf <- workflow() %>% add_recipe(df_recipe) %>% add_model(new_rf)
+#Cross validation
+cv_folds <- vfold_cv(train, v = 5)
+#Defining the grid of hyperparameters
+rf_grid <-grid_random(
+  trees(range = c(1000,2000)), #number of trees
+  mtry(range = c(2,4)), #number of variables at each node to split
+  min_n(range = c(2,6)), # minimum number data points at each node
+  size = 20 # 20 combinations
+)
+#Tune the model
+tune_results <- tune_grid(new_random_wf, resamples = cv_folds, grid = rf_grid, 
+                           metrics = metric_set(accuracy, kap),
+  control = control_grid(parallel_over = "everything"))
+best_params <- select_best(tune_results, metric = "accuracy")
+final_rf <- finalize_workflow(new_random_wf, best_params)
+final_model <- fit(final_rf, data = train)
+test_pred_rf <- predict(final_model, new_data = test) %>% bind_cols(test)
+final_metrics <- test_pred_rf %>% metrics(truth = Crm.Cd.Desc, estimate = .pred_class)
+print(final_metrics)
+
+```
   
   
 # 5.3. Logistic Regression: Classify Time.to.reports as Delayed (>1 day) or Timely (<= 1 day)
